@@ -18,6 +18,5 @@ This repo is considered as the submission for COMP3005 Assignment 3, Question 1.
 - Run DataBaseInteraction.java
 
 # Video Demo
-* https://www.youtube.com/watch?v=PdKBFOBJ8TY
-
+* https://www.youtube.com/watch?v=2OrM1OistVc
 
