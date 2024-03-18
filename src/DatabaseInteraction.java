@@ -45,7 +45,7 @@ public class DatabaseInteraction {
 
     // loop for user input
     static void selectionLoop (){
-        try (Scanner scanner = new Scanner(System.in)) {
+        try {
             while (true){
                 System.out.println("\nWhat would you like to do? Please enter a number to select an option. And 0 to exit the program.");
                 System.out.println("\n(1) Retrieve and display all records from the students table" +
@@ -53,11 +53,12 @@ public class DatabaseInteraction {
                                "\n(3) Update the email address for a student" +
                                "\n(4) Delete a student record");
                                
+                Scanner scanner = new Scanner(System.in);
                 int userInput = scanner.nextInt(); //store user input
                 
                 if (userInput == 0){
                     System.out.println("Exiting program. Goodbye!");
-                    return;
+                    break;
                 }
 
                 else{
@@ -66,7 +67,8 @@ public class DatabaseInteraction {
                         getAllStudents();
                     }
 
-                    if (userInput == 2) {
+                    try {
+                        if (userInput == 2) {
                         System.out.println("You've selected option 2");
 
                         // ask for user entered values and add to indices from 1 to 4 (?) of the query
@@ -84,8 +86,11 @@ public class DatabaseInteraction {
                         Date convertedDate = Date.valueOf(date); // convert to date format (YYYY-MM-DD)
                         
                         addStudent(firstName, lastName, studentEmail, convertedDate);
-
                     }
+                }
+                catch (IllegalArgumentException e){
+                    System.out.println("Incorrect format. Enter the date as YYYY-MM-DD.");
+                }
 
                     if (userInput == 3){
                         System.out.println("You've selected option 3");
@@ -106,8 +111,9 @@ public class DatabaseInteraction {
                     }
                 }
             }
-        } catch (NumberFormatException e) {
-            System.out.println("Please enter a valid number");
+        } 
+        catch (NumberFormatException | SQLIntegrityConstraintViolationException | InputMismatchException e) {
+            System.out.println("Please enter a valid number.");
         }
     }
 
@@ -128,8 +134,7 @@ public class DatabaseInteraction {
         }
 
         catch (SQLException e){
-            System.out.println("Connection failed inside displayStudents: SQLException");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -158,11 +163,14 @@ public class DatabaseInteraction {
                 System.out.println("Failed to insert new student.");
             }
         }
+        catch (SQLIntegrityConstraintViolationException e){
+            System.out.println("Failed to add new student as it has a duplicate email.");
+        }
 
         catch (SQLException e){
-            System.out.println("Connection failed inside addStudent: SQLException");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
+ 
     }
 
     //delete student from the students table given student_id
@@ -186,15 +194,14 @@ public class DatabaseInteraction {
             }
         }
         catch (SQLException e){
-            System.out.println("Connection failed inside deleteStudent: SQLException");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
         
     }
 
     //update the student_email column in students table given student_id
-    static void updateStudentEmail(int student_id, String new_email){
+    static void updateStudentEmail(int student_id, String new_email) throws SQLIntegrityConstraintViolationException{
         try{
             //update the students table, specifically the email column of the record whose student_id
             //matches the one given by the user
@@ -214,8 +221,7 @@ public class DatabaseInteraction {
             }
         }
         catch (SQLException e){
-            System.out.println("Connection failed inside updateStudentEmail: SQLException");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 }
